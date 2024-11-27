@@ -1,502 +1,342 @@
-import streamlit as st
-import random
+from flask import Flask, render_template, request, redirect, url_for, session
 
-class GoldenPortfolioGame:
-    def __init__(self):
-        # Initialize session state keys if not exists
-        if 'game_started' not in st.session_state:
-            st.session_state.game_started = False
-        if 'game_state' not in st.session_state:
-            self._reset_game_state()
+app = Flask(__name__)
+app.secret_key = '\x1eh\xfa\xdat\x18)\x1e3<\x8d\xe6\xe8J\xb3io\x11\xe9\x17\x00\xa7V\xca'
 
-    def _reset_game_state(self):
-        """Reset the game state to initial conditions"""
-        st.session_state.game_state = {
-            'total_score': 0,
-            'current_region_index': 0,
-            'current_challenge_index': 0,
-            'completed_challenges': [],
-            'current_funds': 1000,
-            'wisdom_tokens': 0
-        }
+# Global variables to store player score and money
+player_score = 0
+player_money = 1000
 
-    def _get_regions(self):
-        """Define game regions and challenges"""
-        return [
-            {
-                'name': 'Valley of Ventures (Investing Basics)',
-                'challenges': [
-                    {
-                        'scenario': 'You receive a tip about a promising tech startup.',
-                        'choices': [
-                            {
-                                'text': 'Invest 25% of funds ($250) hoping for high returns',
-                                'score': 7.5,
-                                'fund_impact': 37.50,
-                                'wisdom': 2,
-                                'explanation': 'Moderate investment with potential tech returns (+15%)'
-                            },
-                            {
-                                'text': 'Invest 50% of funds ($500) for a higher risk-reward balance',
-                                'score': 5.0,
-                                'fund_impact': 0,
-                                'wisdom': 1,
-                                'explanation': 'High risk with uncertain returns (0% return)'
-                            },
-                            {
-                                'text': 'Diversify: Invest in tech company and bonds',
-                                'score': 9.0,
-                                'fund_impact': 67.50,
-                                'wisdom': 3,
-                                'explanation': 'Smart diversification (Tech +10%, Bonds +5%)'
-                            }
-                        ]
-                    },
-                    {
-                        'scenario': 'You can choose between buying gold or real estate.',
-                        'choices': [
-                            {
-                                'text': 'Buy gold, anticipating a short-term price spike',
-                                'score': 6.5,
-                                'fund_impact': 40,
-                                'wisdom': 2,
-                                'explanation': 'Quick return (+8%) but limited long-term potential'
-                            },
-                            {
-                                'text': 'Invest in real estate, anticipating long-term growth',
-                                'score': 9.0,
-                                'fund_impact': 75,
-                                'wisdom': 3,
-                                'explanation': 'Patient investment with +15% return after 3 years'
-                            },
-                            {
-                                'text': 'Split investment between gold and real estate',
-                                'score': 8.0,
-                                'fund_impact': 57.50,
-                                'wisdom': 2,
-                                'explanation': 'Balanced approach with moderate risk'
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                'name': 'Forest of Finance (Managing Expenses and Saving)',
-                'challenges': [
-                    {
-                        'scenario': 'You need $200 for an urgent repair.',
-                        'choices': [
-                            {
-                                'text': 'Dip into your investments',
-                                'score': 5.5,
-                                'fund_impact': -200,
-                                'wisdom': 1,
-                                'explanation': 'Disrupts investment strategy, delays returns'
-                            },
-                            {
-                                'text': 'Use your savings',
-                                'score': 9.0,
-                                'fund_impact': -200,
-                                'wisdom': 3,
-                                'explanation': 'Maintains investment integrity, keeps portfolio intact'
-                            },
-                            {
-                                'text': 'Borrow money',
-                                'score': 4.0,
-                                'fund_impact': -220,
-                                'wisdom': 1,
-                                'explanation': 'Incurs 10% interest, increases financial burden'
-                            }
-                        ]
-                    },
-                    {
-                        'scenario': 'You see an expensive relic you want to buy.',
-                        'choices': [
-                            {
-                                'text': 'Buy the relic',
-                                'score': 4.0,
-                                'fund_impact': -200,
-                                'wisdom': 1,
-                                'explanation': 'Impulsive purchase reduces portfolio value'
-                            },
-                            {
-                                'text': 'Skip the purchase',
-                                'score': 9.0,
-                                'fund_impact': 0,
-                                'wisdom': 3,
-                                'explanation': 'Preserves wealth for better opportunities'
-                            },
-                            {
-                                'text': 'Purchase only if resellable for profit',
-                                'score': 7.0,
-                                'fund_impact': 20,
-                                'wisdom': 2,
-                                'explanation': 'Potential for 10% resale value after 3 turns'
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                'name': 'Canyon of Compounders (Power of Compounding)',
-                'challenges': [
-                    {
-                        'scenario': 'You earned $50 interest from an investment.',
-                        'choices': [
-                            {
-                                'text': 'Spend the money immediately',
-                                'score': 4.0,
-                                'fund_impact': -50,
-                                'wisdom': 1,
-                                'explanation': 'Reduces potential for compound growth'
-                            },
-                            {
-                                'text': 'Reinvest the money',
-                                'score': 9.0,
-                                'fund_impact': 10,
-                                'wisdom': 3,
-                                'explanation': 'Compound growth increases portfolio by 20%'
-                            },
-                            {
-                                'text': 'Put it in a savings account',
-                                'score': 6.0,
-                                'fund_impact': 1,
-                                'wisdom': 2,
-                                'explanation': 'Low interest rate limits growth potential'
-                            }
-                        ]
-                    },
-                    {
-                        'scenario': 'Choose between short-term and long-term returns.',
-                        'choices': [
-                            {
-                                'text': 'Take a 10% gain in 6 months',
-                                'score': 6.0,
-                                'fund_impact': 50,
-                                'wisdom': 2,
-                                'explanation': 'Quick return but limited long-term potential'
-                            },
-                            {
-                                'text': 'Wait for a 20% gain in 2 years',
-                                'score': 9.0,
-                                'fund_impact': 100,
-                                'wisdom': 3,
-                                'explanation': 'Patient approach yields higher returns'
-                            },
-                            {
-                                'text': 'Take half now and half later',
-                                'score': 7.0,
-                                'fund_impact': 50,
-                                'wisdom': 2,
-                                'explanation': 'Balanced approach with moderate returns'
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                'name': 'City of Cycles (Understanding Economic Cycles)',
-                'challenges': [
-                    {
-                        'scenario': 'The market has recently declined.',
-                        'choices': [
-                            {
-                                'text': 'Invest heavily, hoping for recovery',
-                                'score': 4.0,
-                                'fund_impact': -450,
-                                'wisdom': 1,
-                                'explanation': 'High risk, significant potential loss'
-                            },
-                            {
-                                'text': 'Wait to see if the market falls further',
-                                'score': 5.0,
-                                'fund_impact': 0,
-                                'wisdom': 2,
-                                'explanation': 'Missed opportunity for growth'
-                            },
-                            {
-                                'text': 'Invest gradually over time',
-                                'score': 9.0,
-                                'fund_impact': -50,
-                                'wisdom': 3,
-                                'explanation': 'Dollar-cost averaging minimizes risk'
-                            }
-                        ]
-                    },
-                    {
-                        'scenario': 'A recession is forecast.',
-                        'choices': [
-                            {
-                                'text': 'Move investments to safer assets',
-                                'score': 9.0,
-                                'fund_impact': -30,
-                                'wisdom': 3,
-                                'explanation': 'Protects portfolio during downturn'
-                            },
-                            {
-                                'text': 'Keep portfolio as is',
-                                'score': 4.0,
-                                'fund_impact': -200,
-                                'wisdom': 1,
-                                'explanation': 'Exposes portfolio to significant market risk'
-                            },
-                            {
-                                'text': 'Withdraw funds to hold cash',
-                                'score': 6.0,
-                                'fund_impact': 0,
-                                'wisdom': 2,
-                                'explanation': 'Misses potential recovery opportunity'
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                'name': 'Summit of Strategy (Financial Planning)',
-                'challenges': [
-                    {
-                        'scenario': 'You are offered an option to start a retirement fund.',
-                        'choices': [
-                            {
-                                'text': 'Contribute 5% now and increase over time',
-                                'score': 8.0,
-                                'fund_impact': 52.50,
-                                'wisdom': 2,
-                                'explanation': 'Balanced approach to long-term savings'
-                            },
-                            {
-                                'text': 'Delay retirement planning',
-                                'score': 4.0,
-                                'fund_impact': 0,
-                                'wisdom': 1,
-                                'explanation': 'Misses compounding growth opportunities'
-                            },
-                            {
-                                'text': 'Put a large amount now for compounding',
-                                'score': 9.0,
-                                'fund_impact': 550,
-                                'wisdom': 3,
-                                'explanation': 'Maximizes long-term wealth potential'
-                            }
-                        ]
-                    },
-                    {
-                        'scenario': 'You\'re offered a life insurance plan.',
-                        'choices': [
-                            {
-                                'text': 'Buy it as a safety measure',
-                                'score': 8.0,
-                                'fund_impact': -100,
-                                'wisdom': 3,
-                                'explanation': 'Protects against unexpected financial strain'
-                            },
-                            {
-                                'text': 'Skip it to keep funds available',
-                                'score': 4.0,
-                                'fund_impact': 0,
-                                'wisdom': 1,
-                                'explanation': 'Exposes to potential future financial risks'
-                            },
-                            {
-                                'text': 'Buy a plan with investment options',
-                                'score': 9.0,
-                                'fund_impact': 50,
-                                'wisdom': 3,
-                                'explanation': 'Combines protection with investment growth'
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
+@app.route('/')
+def start():
+    return render_template('start.html')
 
-    def render_start_page(self):
-        """Render the game start page"""
-        st.title("🏆 The Quest for the Golden Portfolio")
-        st.write("Embark on a financial adventure to build your wealth!")
-        
-        st.markdown("""
-        ### Game Rules
-        - Start with $1,000 initial funds
-        - Navigate through 5 regions of financial challenges
-        - Make strategic decisions to grow your portfolio
-        - Earn wisdom tokens by making smart choices
-        - Your final score depends on financial acumen and portfolio growth
-        """)
-        
-        if st.button("Start Your Financial Journey"):
-            st.session_state.game_started = True
-            self._reset_game_state()
-            st.experimental_rerun()
+@app.route('/instructions')
+def instructions():
+    return render_template('instructions.html')
 
-    def render_challenge_page(self):
-        """Render the current challenge page"""
-        # Get current region and challenge
-        regions = self._get_regions()
-        current_region_index = st.session_state.game_state['current_region_index']
-        current_challenge_index = st.session_state.game_state['current_challenge_index']
-        
-        region = regions[current_region_index]
-        challenge = region['challenges'][current_challenge_index]
-        
-        # Display header and game state
-        st.title(f"{region['name']}")
-        st.subheader("Challenge")
-        st.write(challenge['scenario'])
-        
-        # Display current game metrics
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric("Current Funds", f"${st.session_state.game_state['current_funds']:,.2f}")
-        with col2:
-            st.metric("Wisdom Tokens", st.session_state.game_state['wisdom_tokens'])
-        with col3:
-            st.metric("Total Score", f"{st.session_state.game_state['total_score']:.2f}")
-        
-        # Choice buttons
-        for choice in challenge['choices']:
-            if st.button(choice['text'], key=f"choice_{choice['text']}"):
-                # Update game state
-                st.session_state.game_state['current_funds'] += choice['fund_impact']
-                st.session_state.game_state['total_score'] += choice['score']
-                st.session_state.game_state['wisdom_tokens'] += choice['wisdom']
-                
-                # Display choice explanation
-                st.info(f"Result: {choice['explanation']}")
-                
-                # Log completed challenge
-                st.session_state.game_state['completed_challenges'].append({
-                    'region': region['name'],
-                    'scenario': challenge['scenario'],
-                    'choice': choice['text'],
-                    'score': choice['score']
-                })
-                
-                # Move to next challenge or region
-                if current_challenge_index + 1 < len(region['challenges']):
-                    st.session_state.game_state['current_challenge_index'] += 1
-                elif current_region_index + 1 < len(regions):
-                    st.session_state.game_state['current_region_index'] += 1
-                    st.session_state.game_state['current_challenge_index'] = 0
-                else:
-                    # Game completed
-                    st.session_state.game_state['game_completed'] = True
-                
-                st.experimental_rerun()
+@app.route('/regions')
+def regions():
+    return render_template('regions.html')
 
-    def render_summary_page(self):
-        """Render the game summary page"""
-        st.title("🏆 Financial Journey Complete!")
-        
-        # Calculate summary metrics
-        total_score = st.session_state.game_state['total_score']
-        final_funds = st.session_state.game_state['current_funds']
-        wisdom_tokens = st.session_state.game_state['wisdom_tokens']
-        
-        # Determine investment rating
-        if total_score < 30:
-            rating = "Novice Investor"
-            advice = "Focus on learning and conservative strategies"
-        elif total_score < 50:
-            rating = "Developing Investor"
-            advice = "You're making progress. Continue learning and diversifying"
-        elif total_score < 70:
-            rating = "Strategic Investor"
-            advice = "Solid financial decisions. Keep refining your approach"
-        else:
-            rating = "Master Investor"
-            advice = "Exceptional financial wisdom and strategic thinking"
-        
-        # Display summary
-        st.metric("Final Portfolio Value", f"${final_funds:,.2f}")
-        st.metric("Total Score", f"{total_score:.2f}")
-        st.metric("Wisdom Tokens Earned", wisdom_tokens)
-        
-        st.subheader(f"Investment Rating: {rating}")
-        st.write(advice)
-        
-        # Final test question
-        st.subheader("Final Financial Wisdom Test")
-        final_question = st.radio(
-            "What is the effect of compound interest?",
-            [
-                "It increases your wealth at a constant rate",
-                "It allows your investment to grow exponentially over time",
-                "It limits your potential growth"
-            ]
-        )
-        
-        # Correct answer check
-        if final_question == "It allows your investment to grow exponentially over time":
-            st.success("Correct! You truly understand the power of compound interest.")
-            st.session_state.game_state['total_score'] += 10
-            st.session_state.game_state['wisdom_tokens'] += 5
-        else:
-            st.warning("Incorrect. Compound interest helps your investments grow exponentially over time.")
-        
-        # Completed challenges review
-        st.subheader("Your Financial Journey")
-        for challenge in st.session_state.game_state['completed_challenges']:
-            st.write(f"**Region:** {challenge['region']}")
-            st.write(f"**Scenario:** {challenge['scenario']}")
-            st.write(f"**Choice:** {challenge['choice']}")
-            st.write(f"**Score:** {challenge['score']:.2f}")
-            st.divider()
-        
-        # Restart option
-        if st.button("Start New Journey"):
-            self._reset_game_state()
-            st.session_state.game_started = False
-            st.experimental_rerun()
+@app.before_request
+def initialize_game():
+    if 'player_money' not in session:
+        session['player_money'] = 1000
+    if 'player_score' not in session:
+        session['player_score'] = 0
+    if 'challenge_number' not in session:
+        session['challenge_number'] = 1
 
-def main():
-    # Set page configuration
-    st.set_page_config(
-        page_title="Golden Portfolio Game",
-        page_icon="💰",
-        layout="wide"
+# Route for Region 1: Valley of Ventures
+@app.route('/region1', methods=['GET', 'POST'])
+def region1():
+    return render_template('region1.html', player_money=session['player_money'], player_score=session['player_score'])
+
+# Challenge 1: Stock Opportunity (Region 1)
+@app.route('/region1/challenge1', methods=['GET', 'POST'])
+def region1_challenge1():
+    if request.method == 'POST':
+        investment_choice = request.form['investment_choice']
+        # Handle Challenge 1: Stock Opportunity
+        if investment_choice == 'a':
+            session['player_money'] += 37.5  # 15% return on $250
+            session['player_score'] += 10  # Points for high-risk, high-return investment
+        elif investment_choice == 'b':
+            session['player_money'] += 0  # No gain or loss on $500
+            session['player_score'] += 5  # Points for moderate risk, no return
+        elif investment_choice == 'c':
+            session['player_money'] += 67.5  # 10% return on $150 (Tech) + 5% on $350 (Bonds)
+            session['player_score'] += 15  # Points for diversification (lower risk)
+
+        # Move to Challenge 2
+        session['challenge_number'] = 2
+        return redirect(url_for('region1_challenge2'))
+
+    return render_template('region1_challenge1.html', player_money=session['player_money'], player_score=session['player_score'])
+
+# Challenge 2: Gold vs. Real Estate (Region 1)
+@app.route('/region1/challenge2', methods=['GET', 'POST'])
+def region1_challenge2():
+    if request.method == 'POST':
+        investment_choice = request.form['investment_choice']
+        # Handle Challenge 2: Gold vs. Real Estate
+        if investment_choice == 'a':
+            session['player_money'] += 40  # 8% return on $500 for gold
+            session['player_score'] += 10  # Points for short-term investment
+        elif investment_choice == 'b':
+            session['player_money'] += 75  # 15% return on $500 for real estate after 3 years
+            session['player_score'] += 20  # Points for long-term growth investment
+        elif investment_choice == 'c':
+            session['player_money'] += 57.5  # Gold +8% on $250, Real Estate +15% on $250
+            session['player_score'] += 15  # Points for balanced investment
+
+        # Move to Region 2
+        return redirect(url_for('region2'))
+
+    return render_template('region1_challenge2.html', player_money=session['player_money'], player_score=session['player_score'])
+
+# Route for Region 2: Forest of Finance
+@app.route('/region2', methods=['GET', 'POST'])
+def region2():
+    return render_template('region2.html', player_money=session['player_money'], player_score=session['player_score'])
+
+# Challenge 1: Emergency Expense (Region 2)
+@app.route('/region2/challenge1', methods=['GET', 'POST'])
+def region2_challenge1():
+    if request.method == 'POST':
+        expense_choice = request.form['expense_choice']
+        # Handle Challenge 1: Emergency Expense
+        if expense_choice == 'a':
+            session['player_money'] -= 200  # Investment decreased temporarily
+            session['player_score'] += 10  # Points for tough decision to delay investment
+        elif expense_choice == 'b':
+            session['player_money'] -= 200  # Savings decreased
+            session['player_score'] += 15  # Points for using savings (avoiding debt)
+        elif expense_choice == 'c':
+            session['player_money'] -= 220  # Debt incurs 10% interest
+            session['player_score'] -= 5  # Points for borrowing and facing interest
+
+        # Move to Challenge 2
+        session['challenge_number'] = 2
+        return redirect(url_for('region2_challenge2'))
+
+    return render_template('region2_challenge1.html', player_money=session['player_money'], player_score=session['player_score'])
+
+# Challenge 2: Luxury Temptation (Region 2)
+@app.route('/region2/challenge2', methods=['GET', 'POST'])
+def region2_challenge2():
+    if request.method == 'POST':
+        expense_choice = request.form['expense_choice']
+        # Handle Challenge 2: Luxury Temptation
+        if expense_choice == 'a':
+            session['player_money'] -= 200  # Immediate loss for luxury purchase
+            session['player_score'] -= 5  # Points for impulsive spending
+        elif expense_choice == 'b':
+            session['player_money']  # No change in portfolio
+            session['player_score'] += 10  # Points for avoiding impulsive buying
+        elif expense_choice == 'c':
+            session['player_money'] += 220  # Gain from resale after 3 turns
+            session['player_score'] += 20  # Points for making a wise purchase
+
+        # Move to Region 3
+        return redirect(url_for('region3'))
+
+    return render_template('region2_challenge2.html', player_money=session['player_money'], player_score=session['player_score'])
+
+# Route for Region 3: Canyon of Compounders
+@app.route('/region3', methods=['GET', 'POST'])
+def region3():
+    return render_template('region3.html', player_money=session['player_money'], player_score=session['player_score'])
+
+# Challenge 1: Reinvestment Decision (Region 3)
+@app.route('/region3/challenge1', methods=['GET', 'POST'])
+def region3_challenge1():
+    if request.method == 'POST':
+        reinvest_choice = request.form['reinvest_choice']
+        # Handle Challenge 1: Reinvestment Decision
+        if reinvest_choice == 'a':
+            session['player_money'] -= 50  # Immediate consumption
+            session['player_score'] -= 5  # Points deducted for poor financial decision
+        elif reinvest_choice == 'b':
+            session['player_money'] += 10  # $60 growth - $50 initial
+            session['player_score'] += 20  # High points for wise reinvestment
+        elif reinvest_choice == 'c':
+            session['player_money'] += 1  # $51 growth - $50 initial
+            session['player_score'] += 10  # Moderate points for cautious saving
+
+        # Move to Challenge 2
+        session['challenge_number'] = 2
+        return redirect(url_for('region3_challenge2'))
+
+    return render_template(
+        'region3_challenge1.html', 
+        player_money=session['player_money'], 
+        player_score=session['player_score']
     )
-    
-    # # Custom CSS for better styling
-    # st.markdown("""
-    # <style>
-    # .stApp {
-    #     background-color: #f0f2f6;
-    # }
-    # .stButton>button {
-    #     color: white;
-    #     background-color: #4CAF50;
-    #     border: none;
-    #     padding: 10px 24px;
-    #     text-align: center;
-    #     text-decoration: none;
-    #     display: inline-block;
-    #     font-size: 16px;
-    #     margin: 4px 2px;
-    #     transition-duration: 0.4s;
-    #     cursor: pointer;
-    # }
-    # .stButton>button:hover {
-    #     background-color: #45a049;
-    # }
-    # .stMetric {
-    #     background-color: white;
-    #     padding: 10px;
-    #     border-radius: 5px;
-    #     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    # }
-    # </style>
-    # """, unsafe_allow_html=True)
-    
-    game = GoldenPortfolioGame()
-    
-    # Game flow control
-    if not st.session_state.get('game_started', False):
-        game.render_start_page()
-    elif st.session_state.game_state.get('game_completed', False):
-        game.render_summary_page()
-    else:
-        game.render_challenge_page()
 
-if __name__ == "__main__":
-    main()
+
+# Challenge 2: Long-Term vs Short-Term Gains (Region 3)
+@app.route('/region3/challenge2', methods=['GET', 'POST'])
+def region3_challenge2():
+    if request.method == 'POST':
+        gains_choice = request.form['gains_choice']
+        # Handle Challenge 2: Long-Term vs Short-Term Gains
+        if gains_choice == 'a':
+            session['player_money'] += 50  # Short-term gain
+            session['player_score'] += 5  # Fewer points for quick returns
+        elif gains_choice == 'b':
+            session['player_money'] += 100  # Long-term gain
+            session['player_score'] += 20  # High points for patience and long-term thinking
+        elif gains_choice == 'c':
+            session['player_money'] += 100  # Gain split: $50 immediate + $50 later
+            session['player_score'] += 10  # Moderate points for balanced choice
+
+        # Move to Region 4
+        return redirect(url_for('region4')) # Replace with next region or summary endpoint
+
+    return render_template(
+        'region3_challenge2.html', 
+        player_money=session['player_money'], 
+        player_score=session['player_score']
+    )
+
+# Route for Region 4: City of Cycles
+@app.route('/region4', methods=['GET', 'POST'])
+def region4():
+    return render_template('region4.html', player_money=session['player_money'], player_score=session['player_score'])
+
+# Challenge 1: Market Timing (Region 4)
+@app.route('/region4/challenge1', methods=['GET', 'POST'])
+def region4_challenge1():
+    if request.method == 'POST':
+        market_choice = request.form['market_choice']
+        # Handle Challenge 1: Market Timing
+        if market_choice == 'a':
+            session['player_money'] -= 450  # Loss due to short-term market volatility
+            session['player_score'] -= 10  # Negative points for risky behavior
+        elif market_choice == 'b':
+            session['player_money']  # No immediate change, but missed opportunity
+            session['player_score'] -= 5  # Minor penalty for indecision
+        elif market_choice == 'c':
+            session['player_money'] -= 50  # Loss minimized through dollar-cost averaging
+            session['player_score'] += 15  # Positive points for risk management
+
+        # Move to Challenge 2
+        session['challenge_number'] = 2
+        return redirect(url_for('region4_challenge2'))
+
+    return render_template(
+        'region4_challenge1.html', 
+        player_money=session['player_money'], 
+        player_score=session['player_score']
+    )
+
+
+# Challenge 2: Recession Warning (Region 4)
+@app.route('/region4/challenge2', methods=['GET', 'POST'])
+def region4_challenge2():
+    if request.method == 'POST':
+        recession_choice = request.form['recession_choice']
+        # Handle Challenge 2: Recession Warning
+        if recession_choice == 'a':
+            session['player_money'] -= 30  # Limited loss due to safer assets
+            session['player_score'] += 15  # High points for prudent decision
+        elif recession_choice == 'b':
+            session['player_money'] -= 200  # Large loss from market exposure
+            session['player_score'] -= 10  # Negative points for inaction
+        elif recession_choice == 'c':
+            session['player_money']  # No loss, but opportunity cost
+            session['player_score'] += 5  # Moderate points for playing it safe
+
+        # Move to Region 5
+        session['challenge_number'] = None
+        return redirect(url_for('region5')) # Replace with next region or summary endpoint
+    
+    return render_template(
+        'region4_challenge2.html', 
+        player_money=session['player_money'], 
+        player_score=session['player_score']
+    )
+
+@app.route('/region5', methods=['GET', 'POST'])
+def region5():
+    return render_template('region5.html', player_money=session['player_money'], player_score=session['player_score'])
+
+# Challenge 1: Retirement Planning (Region 5)
+@app.route('/region5/challenge1', methods=['GET', 'POST'])
+def region5_challenge1():
+    if request.method == 'POST':
+        retirement_choice = request.form['retirement_choice']
+        # Handle Challenge 1: Retirement Planning
+        if retirement_choice == 'a':
+            session['player_money'] -= 50  # Contribute small amount now
+            session['player_score'] += 15  # Positive points for prudent planning
+            session['retirement_fund'] = session.get('retirement_fund', 0) + 52.5  # Gradual growth
+        elif retirement_choice == 'b':
+            session['player_money']  # No immediate impact
+            session['player_score'] -= 5  # Negative points for missed opportunity
+        elif retirement_choice == 'c':
+            session['player_money'] -= 500  # Large contribution impacts liquidity
+            session['player_score'] += 25  # High points for long-term commitment
+            session['retirement_fund'] = session.get('retirement_fund', 0) + 550  # Significant growth
+
+        # Move to Challenge 2
+        session['challenge_number'] = 2
+        return redirect(url_for('region5_challenge2'))
+
+    return render_template(
+        'region5_challenge1.html', 
+        player_money=session['player_money'], 
+        player_score=session['player_score'], 
+        retirement_fund=session.get('retirement_fund', 0)
+    )
+
+
+# Challenge 2: Life Insurance (Region 5)
+@app.route('/region5/challenge2', methods=['GET', 'POST'])
+def region5_challenge2():
+    if request.method == 'POST':
+        insurance_choice = request.form['insurance_choice']
+        # Handle Challenge 2: Life Insurance
+        if insurance_choice == 'a':
+            session['player_money'] -= 100  # Cost of the premium
+            session['player_score'] += 20  # Positive points for risk management
+        elif insurance_choice == 'b':
+            session['player_money']  # No immediate impact
+            session['player_score'] -= 10  # Negative points for taking a risk
+        elif insurance_choice == 'c':
+            session['player_money'] -= 100  # Cost of the plan
+            session['player_score'] += 25  # High points for combining insurance with investment
+            session['player_money'] *= 1.05  # Portfolio grows by 5%
+
+        # End of Region 5 - Move to Final Stage or Summary
+        return redirect(url_for('golden_portfolio_test'))  # Replace with the next stage of the game
+
+    return render_template(
+        'region5_challenge2.html', 
+        player_money=session['player_money'], 
+        player_score=session['player_score']
+    )
+
+# Golden Portfolio Test (Final Question)
+@app.route('/golden_portfolio_test', methods=['GET', 'POST'])
+def golden_portfolio_test():
+    if request.method == 'POST':
+        final_answer = request.form['final_answer']
+        # Handle Final Question
+        if final_answer == 'b':
+            session['player_score'] += 20  # Bonus points for correct answer
+            message = "Correct! Compound interest helps your investments grow exponentially."
+        else:
+            session['player_score'] -= 10  # Penalty for incorrect answer
+            message = "Incorrect. The correct answer is (b): It allows your investment to grow exponentially."
+
+        # Redirect to summary page
+        session['final_message'] = message
+        return redirect(url_for('game_summary'))
+
+    return render_template(
+        'golden_portfolio_test.html', 
+        player_money=session['player_money'], 
+        player_score=session['player_score']
+    )
+
+# Game Summary Page
+@app.route('/game_summary', methods=['GET'])
+def game_summary():
+    final_message = session.get('final_message', "Your journey is complete!")
+    return render_template(
+        'game_summary.html', 
+        player_money=session['player_money'], 
+        player_score=session['player_score'], 
+        final_message=final_message
+    )
+
+# End Game Page
+@app.route('/end_game', methods=['GET'])
+def end_game():
+    return render_template('end_game.html')
+
+if __name__ == '__main__':
+    app.run(debug=True)
