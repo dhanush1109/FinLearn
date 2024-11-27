@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge 1: Emergency Expense</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Region 2: Forest of Finance - Challenge 1</h1>
+    </header>
+
+    <section>
+        <h2>Your current portfolio: ${{ player_money }} | Score: {{ player_score }}</h2>
+        <p>You are faced with an unexpected emergency expense of $200. You need to make a decision on how to handle it.</p>
+        
+        <form method="POST">
+            <label for="expense_choice">How do you want to handle the emergency?</label><br>
+            <input type="radio" id="a" name="expense_choice" value="a">
+            <label for="a">Delay your investment and use $200 from your portfolio.</label><br>
+            
+            <input type="radio" id="b" name="expense_choice" value="b">
+            <label for="b">Use your savings of $200.</label><br>
+            
+            <input type="radio" id="c" name="expense_choice" value="c">
+            <label for="c">Borrow the $200 and pay it back with interest.</label><br><br>
+
+            <input type="submit" value="Submit Choice">
+        </form>
+    </section>
+
+    <!-- <footer>
+        <p><a href="{{ url_for('region2') }}">Back to Region 2</a></p>
+    </footer> -->
+</body>
+</html>

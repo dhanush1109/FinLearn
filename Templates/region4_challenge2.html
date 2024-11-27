@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Region 4: City of Cycles - Challenge 2</title>
+</head>
+<body>
+    <h1>Challenge 2: Recession Warning</h1>
+    <p>Current Money: ${{ player_money }}</p>
+    <p>Current Score: {{ player_score }}</p>
+    <form method="post">
+        <label>
+            <input type="radio" name="recession_choice" value="a" required>
+            (a) Move your investments into safer assets.
+        </label><br>
+        <label>
+            <input type="radio" name="recession_choice" value="b">
+            (b) Keep your portfolio as is.
+        </label><br>
+        <label>
+            <input type="radio" name="recession_choice" value="c">
+            (c) Withdraw funds to hold cash.
+        </label><br>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>

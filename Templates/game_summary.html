@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Summary</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            text-align: center;
+        }
+        h1 {
+            color: #4caf50;
+        }
+        p {
+            font-size: 1.1em;
+            margin: 10px 0;
+        }
+        .final-stats {
+            margin-top: 20px;
+        }
+        .final-stats p {
+            font-weight: bold;
+        }
+        .play-again {
+            margin-top: 30px;
+        }
+        .play-again a {
+            text-decoration: none;
+            color: #fff;
+            background-color: #4caf50;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .play-again a:hover {
+            background-color: #45a049;
+        }
+        .next-btn {
+            margin-top: 20px;
+        }
+        .next-btn a {
+            text-decoration: none;
+            color: #fff;
+            background-color: #2196F3;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .next-btn a:hover {
+            background-color: #1976D2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Congratulations on Completing Your Journey!</h1>
+        <p>{{ final_message }}</p>
+        <div class="final-stats">
+            <p><strong>Final Money:</strong> ${{ player_money }}</p>
+            <p><strong>Final Score:</strong> {{ player_score }} Wisdom Points</p>
+        </div>
+        <div class="next-btn">
+            <a href="{{ url_for('end_game') }}">Next</a>
+        </div>
+    </div>
+</body>
+</html>
