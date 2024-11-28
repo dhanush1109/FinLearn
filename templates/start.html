@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Quest for the Golden Portfolio</title>
+    <style>
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 20px #ffd700, 0 0 30px #ffd700, 0 0 40px #ffd700; }
+            50% { text-shadow: 0 0 30px #ffd700, 0 0 40px #ffd700, 0 0 50px #ffd700; }
+        }
+
+        @keyframes floatUpDown {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes shine {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { box-shadow: 0 0 20px #ffd700; }
+            50% { box-shadow: 0 0 40px #ffd700; }
+        }
+
+        @keyframes rotateCoins {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1c1c3d, #2a1c3d);
+            font-family: 'Arial', sans-serif;
+            color: #fff;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .coin {
+            position: absolute;
+            font-size: 2em;
+            animation: rotateCoins 4s linear infinite;
+            color: #ffd700;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 3em;
+            color: #ffd700;
+            margin: 40px 0;
+            animation: titleGlow 2s infinite, floatUpDown 3s ease-in-out infinite;
+            text-align: center;
+            background: linear-gradient(90deg, #ffd700, #fff, #ffd700);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: shine 3s linear infinite;
+        }
+
+        p {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            text-align: center;
+            animation: floatUpDown 3s ease-in-out infinite;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        #game-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            width: 80%;
+            max-width: 500px;
+            margin: 20px auto;
+            position: relative;
+            border: 2px solid #ffd700;
+            animation: borderGlow 2s infinite;
+        }
+
+        input[type="text"] {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 50px;
+            width: 80%;
+            font-size: 18px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #ffd700;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #ffd700;
+        }
+
+        button {
+            padding: 15px 40px;
+            font-size: 18px;
+            background: linear-gradient(45deg, #ffd700, #ffed4a);
+            color: #1c1c3d;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(45deg, #ffed4a, #ffd700);
+        }
+
+        button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(45deg);
+            transition: all 0.3s ease;
+        }
+
+        button:hover::after {
+            transform: rotate(45deg) translate(50%, 50%);
+        }
+
+        .decoration {
+            position: absolute;
+            font-size: 3em;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to The Quest for the Golden Portfolio!</h1>
+    <p>Embark on an Epic Journey through Financial Mastery</p>
+    <div id="game-container">
+        <div>
+            <input type="text" id="username" placeholder="Please enter your name...">
+        </div>
+        <div>
+            <button onclick="startGame()">Begin Your Quest</button>
+        </div>
+    </div>
+
+    <script>
+        // Create floating coins
+        function createCoins() {
+            for(let i = 0; i < 15; i++) {
+                const coin = document.createElement('div');
+                coin.className = 'coin';
+                coin.innerHTML = '💰';
+                coin.style.left = Math.random() * 100 + 'vw';
+                coin.style.top = Math.random() * 100 + 'vh';
+                coin.style.animationDelay = Math.random() * 2 + 's';
+                document.body.appendChild(coin);
+            }
+        }
+
+        // Create decorative elements
+        function createDecorations() {
+            const decorations = ['✨', '💎', '👑'];
+            for(let i = 0; i < 20; i++) {
+                const decoration = document.createElement('div');
+                decoration.className = 'decoration';
+                decoration.innerHTML = decorations[Math.floor(Math.random() * decorations.length)];
+                decoration.style.left = Math.random() * 100 + 'vw';
+                decoration.style.top = Math.random() * 100 + 'vh';
+                decoration.style.animation = `float ${3 + Math.random() * 2}s ease-in-out infinite`;
+                decoration.style.animationDelay = Math.random() * 2 + 's';
+                document.body.appendChild(decoration);
+            }
+        }
+
+        function startGame() {
+            let username = document.getElementById('username').value;
+            if(username) {
+                // Add celebration effect before redirect
+                const celebration = document.createElement('div');
+                celebration.style.position = 'fixed';
+                celebration.style.top = '0';
+                celebration.style.left = '0';
+                celebration.style.width = '100vw';
+                celebration.style.height = '100vh';
+                celebration.style.background = 'radial-gradient(circle, rgba(255,215,0,0.2) 0%, rgba(0,0,0,0) 70%)';
+                celebration.style.animation = 'fadeOut 1s forwards';
+                document.body.appendChild(celebration);
+
+                setTimeout(() => {
+                    window.location.href = "{{ url_for('instructions') }}";
+                }, 1000);
+            } else {
+                alert('Please enter your name to begin the quest!');
+                input.classList.add('shake');
+                setTimeout(() => input.classList.remove('shake'), 500);
+            }
+        }
+
+        // Initialize animations
+        window.onload = function() {
+            createCoins();
+            createDecorations();
+        }
+    </script>
+</body>
+</html>
