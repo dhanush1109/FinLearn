@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Full-Screen Image with Next Button</title>
+    <style>
+        /* Reset and full viewport coverage */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .image-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .fullscreen-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;  /* Ensures the image covers full screen without distortion */
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* Style for the Next button */
+        .next-button {
+            position: fixed;
+            bottom: env(safe-area-inset-bottom, 30px);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2; /* Ensure button is above image */
+
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            font-size: 20px;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .next-button:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        /* Responsive adjustments */
+        @media screen and (max-width: 600px) {
+            .next-button {
+                padding: 12px 24px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="image-container">
+        <img src="static/VOV.jpg" alt="Full-Screen Image" class="fullscreen-image">
+    </div>
+    
+    <!-- Next Button -->
+    <button class="next-button" onclick="nextImage()">Next</button>
+
+    <script>
+        // Function to handle the next button action
+        function nextImage() {
+            // Redirect to /region1/challenge1 when the Next button is clicked
+            window.location.href = '/region1/challenge1';
+        }
+
+        // Prevent default touch behaviors that might interfere with full-screen experience
+        document.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+    </script>
+</body>
+</html>

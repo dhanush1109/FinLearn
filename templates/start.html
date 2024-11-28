@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Quest for the Golden Portfolio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #game-container {
+            background: url('image.png') no-repeat center center;
+            background-size: cover;
+            padding: 40px;
+            border-radius: 10px;
+            width: 400px;
+            margin: auto;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+            width: 80%;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #8b5e3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #6a3f2f;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        a {
+            font-size: 1.2em;
+            color: #8b5e3c;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #6a3f2f;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Welcome to The Quest for the Golden Portfolio!</h1>
+    <p>Get ready to navigate through various financial challenges.</p>
+
+    <div id="game-container">
+        <div>
+            <input type="text" id="username" placeholder="Type your username">
+        </div>
+        <div>
+            <button onclick="startGame()">Start the Game</button>
+        </div>
+    </div>
+
+    <script>
+        function startGame() {
+            let username = document.getElementById('username').value;
+            if(username) {
+                alert('Welcome, ' + username + '! The game is starting now.');
+                // You can redirect the user to the next game page or challenge here
+                window.location.href = "{{ url_for('instructions') }}";
+            } else {
+                alert('Please enter a username to start.');
+            }
+        }
+    </script>
+
+</body>
+</html>

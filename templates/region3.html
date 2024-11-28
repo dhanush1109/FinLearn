@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full-Screen Image with Next Button</title>
+    <style>
+        /* Full reset and viewport control */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .fullscreen-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .fullscreen-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures the image covers the full screen without distortion */
+        }
+
+        /* Style for the Next button */
+        .next-button {
+            position: absolute;
+            bottom: 30px; /* Position at the bottom of the screen */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
+            color: white;
+            font-size: 20px;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 10; /* Ensure it appears above the image */
+            transition: background-color 0.3s ease;
+        }
+
+        .next-button:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media screen and (max-width: 600px) {
+            .next-button {
+                padding: 12px 24px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Full-Screen Image Container -->
+    <div class="fullscreen-container">
+        <img src="static/COC.jpg" alt="Full-Screen Image" class="fullscreen-image">
+        <!-- Next Button -->
+        <button class="next-button" onclick="nextImage()">Next</button>
+    </div>
+
+    <script>
+        // Function to handle the "Next" button click
+        function nextImage() {
+            // Redirect to the next page
+            window.location.href = '/region3/challenge1';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instructions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            background: url("{{ url_for('static', filename='Image.png') }}") no-repeat center center;
+            background-size: cover;
+            color: white;
+            text-align: center;
+        }
+
+        .header {
+            margin-top: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+        }
+
+        .header p {
+            font-size: 1.2em;
+        }
+
+        .next-button {
+            font-size: 1.2em;
+            background-color: #8b5e3c;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+
+        .next-button:hover {
+            background-color: #6a3f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+    </div>
+    <a href="{{ url_for('regions') }}" class="next-button">Next</a>
+</body>
+</html>
