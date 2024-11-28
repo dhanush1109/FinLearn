@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge 2: Gold vs. Real Estate</title>
+</head>
+<body>
+    <h1>Challenge 2: Gold vs. Real Estate</h1>
+    <p>Your current money: ${{ player_money }}</p>
+    <p>Your current score: {{ player_score }} points</p>
+
+    <form method="post">
+        <p>Choose your next investment:</p>
+        <label><input type="radio" name="investment_choice" value="a" required> Buy gold ($500) with an 8% return - +$40</label><br>
+        <label><input type="radio" name="investment_choice" value="b" required> Invest in real estate ($500) with a 15% return after 3 years - +$75</label><br>
+        <label><input type="radio" name="investment_choice" value="c" required> Split between gold ($250) and real estate ($250), gold returns 8% and real estate 15% - +$57.50</label><br>
+        <button type="submit">Next</button>
+    </form>
+</body>
+</html>

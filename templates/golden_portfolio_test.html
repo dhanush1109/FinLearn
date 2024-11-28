@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Golden Portfolio Test</title>
+</head>
+<body>
+    <h1>The Golden Portfolio Test</h1>
+    <p>Current Money: ${{ player_money }}</p>
+    <p>Current Score: {{ player_score }}</p>
+    <p>Final Question:</p>
+    <form method="post">
+        <label>
+            What is the effect of compound interest?
+        </label><br>
+        <label>
+            <input type="radio" name="final_answer" value="a" required>
+            (a) It increases your wealth at a constant rate.
+        </label><br>
+        <label>
+            <input type="radio" name="final_answer" value="b">
+            (b) It allows your investment to grow exponentially over time.
+        </label><br>
+        <label>
+            <input type="radio" name="final_answer" value="c">
+            (c) It limits your potential growth.
+        </label><br>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
+
