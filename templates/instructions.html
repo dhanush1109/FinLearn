@@ -5,53 +5,169 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Instructions</title>
     <style>
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700; }
+            50% { text-shadow: 0 0 20px #ffd700, 0 0 30px #ffd700; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            background: url("{{ url_for('static', filename='Image.png') }}") no-repeat center center;
-            background-size: cover;
+            background: linear-gradient(135deg, #1c1c3d, #2a1c3d);
             color: white;
             text-align: center;
+            overflow-x: hidden;
         }
 
         .header {
-            margin-top: 20px;
+            margin-top: 40px;
+            animation: fadeIn 1s ease-out;
         }
 
         .header h1 {
             font-size: 2.5em;
+            color: #ffd700;
+            animation: glow 2s infinite;
+            margin-bottom: 30px;
         }
 
-        .header p {
-            font-size: 1.2em;
+        .instructions-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px;
+            max-width: 800px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            animation: fadeIn 1s ease-out 0.5s both;
+        }
+
+        .instruction-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            transform-origin: left;
+            animation: slideIn 0.5s ease-out;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .instruction-card:hover {
+            transform: translateX(10px);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 215, 0, 0.4);
+        }
+
+        .instruction-card h2 {
+            color: #ffd700;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .instruction-card p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin: 0;
         }
 
         .next-button {
             font-size: 1.2em;
-            background-color: #8b5e3c;
-            color: white;
-            padding: 10px 20px;
+            background: linear-gradient(45deg, #ffd700, #ffed4a);
+            color: #1c1c3d;
+            padding: 15px 40px;
             border: none;
-            border-radius: 5px;
+            border-radius: 50px;
             cursor: pointer;
             text-decoration: none;
-            margin-bottom: 20px;
+            margin: 40px 0;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            animation: float 2s infinite;
         }
 
         .next-button:hover {
-            background-color: #6a3f2f;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(45deg, #ffed4a, #ffd700);
+        }
+
+        .decoration {
+            position: absolute;
+            font-size: 2em;
+            pointer-events: none;
+            animation: float 3s infinite;
+            opacity: 0.3;
         }
     </style>
 </head>
 <body>
     <div class="header">
+        <h1>Game Instructions</h1>
     </div>
-    <a href="{{ url_for('regions') }}" class="next-button">Next</a>
+
+    <div class="instructions-container">
+        <div class="instruction-card" style="animation-delay: 0.2s;">
+            <h2>🎯 Game Objective</h2>
+            <p>This game aims to enhance your financial understanding through interactive challenges and decision-making scenarios.</p>
+        </div>
+
+        <div class="instruction-card" style="animation-delay: 0.4s;">
+            <h2>🗺️ Game Journey</h2>
+            <p>Navigate through 5 unique locations, each presenting distinct financial challenges and learning opportunities.</p>
+        </div>
+
+        <div class="instruction-card" style="animation-delay: 0.6s;">
+            <h2>💡 Decision Making</h2>
+            <p>Each scenario presents choices with distinct financial impacts. Your decisions directly affect your portfolio balance, shown immediately for clarity.</p>
+        </div>
+
+        <div class="instruction-card" style="animation-delay: 0.8s;">
+            <h2>🏆 Final Challenge</h2>
+            <p>The Golden Portfolio Test awaits at the end, assessing your understanding and financial wisdom based on your journey.</p>
+        </div>
+    </div>
+
+    <a href="{{ url_for('regions') }}" class="next-button">Begin Journey →</a>
+
+    <script>
+        function createDecorations() {
+            const decorations = ['✨', '💰', '📈'];
+            for(let i = 0; i < 15; i++) {
+                const decoration = document.createElement('div');
+                decoration.className = 'decoration';
+                decoration.innerHTML = decorations[Math.floor(Math.random() * decorations.length)];
+                decoration.style.left = Math.random() * 100 + 'vw';
+                decoration.style.top = Math.random() * 100 + 'vh';
+                decoration.style.animationDelay = Math.random() * 2 + 's';
+                document.body.appendChild(decoration);
+            }
+        }
+
+        window.onload = createDecorations;
+    </script>
 </body>
 </html>
