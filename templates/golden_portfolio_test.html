@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Golden Portfolio Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(
+                rgba(25, 29, 49, 0.8),
+                rgba(25, 29, 49, 0.8)
+            ),
+            url('/api/placeholder/1920/1080');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Times New Roman', serif;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(45deg, rgba(218, 165, 32, 0.1) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(218, 165, 32, 0.1) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(218, 165, 32, 0.1) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(218, 165, 32, 0.1) 75%);
+            background-size: 20px 20px;
+            pointer-events: none;
+        }
+
+        .content-box {
+            background: linear-gradient(
+                145deg,
+                rgba(255, 255, 255, 0.9),
+                rgba(255, 255, 255, 0.85)
+            );
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 
+                0 4px 15px rgba(0, 0, 0, 0.2),
+                0 0 0 2px rgba(218, 165, 32, 0.3),
+                0 0 0 4px rgba(218, 165, 32, 0.1);
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+            border: 1px solid rgba(218, 165, 32, 0.5);
+        }
+
+        .content-box::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, transparent, rgba(218, 165, 32, 0.3));
+            border-radius: 12px;
+            z-index: -1;
+        }
+
+        h1 {
+            color: #2c1810;
+            margin-top: 0;
+            text-align: center;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            border-bottom: 2px solid rgba(218, 165, 32, 0.5);
+            padding-bottom: 0.5rem;
+        }
+
+        p {
+            color: #2c1810;
+            margin: 1rem 0;
+            font-size: 1.1em;
+        }
+
+        form {
+            margin-top: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin: 0.8rem 0;
+            color: #2c1810;
+            font-size: 1.1em;
+        }
+
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        button {
+            margin-top: 1.5rem;
+            padding: 0.8rem 2rem;
+            background: linear-gradient(145deg, #c5a028, #daa520);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-family: 'Times New Roman', serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(145deg, #daa520, #c5a028);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        @media (max-width: 600px) {
+            .content-box {
+                width: 85%;
+                padding: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="content-box">
+        <h1>The Golden Portfolio Test</h1>
+        <p>Current Money: ${{ player_money }}</p>
+        <p>Current Score: {{ player_score }}</p>
+        <p>Current Retirement Fund: ${{ retirement_fund }}</p> <!-- Show the retirement fund -->
+        <p>Final Question:</p>
+        <form method="post">
+            <label>
+                What is the effect of compound interest?
+            </label>
+            <label>
+                <input type="radio" name="final_answer" value="a" required>
+                (a) It increases your wealth at a constant rate.
+            </label>
+            <label>
+                <input type="radio" name="final_answer" value="b">
+                (b) It allows your investment to grow exponentially over time.
+            </label>
+            <label>
+                <input type="radio" name="final_answer" value="c">
+                (c) It limits your potential growth.
+            </label>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</body>
+</html>
