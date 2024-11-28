@@ -295,10 +295,30 @@ def region5_challenge2():
             player_score += 20  # Points for diversification
 
         # Move to final challenge or summary
-        return redirect(url_for('game_summary'))
+        return redirect(url_for('golden_portfolio_test'))
 
     return render_template('region5_challenge2.html', player_money=player_money, player_score=player_score)
+from flask import Flask, request, render_template, redirect, url_for, session
 
+@app.route('/golden_portfolio_test', methods=['GET', 'POST'])
+def golden_portfolio_test():
+    feedback = None
+    if request.method == 'POST':
+        answer = request.form.get('portfolio_answer')
+        
+        if answer == 'b':  # Correct answer
+            session['player_money'] = session.get('player_money', 1000) + 500
+            session['player_score'] = session.get('player_score', 0) + 30
+            return redirect(url_for('game_summary'))
+        else:
+            feedback = "Incorrect. Please try again!"
+
+    return render_template(
+        'golden_portfolio_test.html',
+        player_money=session.get('player_money', 1000),
+        player_score=session.get('player_score', 0),
+        feedback=feedback
+    )
 # Game Summary Page
 @app.route('/game_summary', methods=['GET'])
 def game_summary():
