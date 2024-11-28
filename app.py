@@ -1,11 +1,21 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__)
 app.secret_key = '\x1eh\xfa\xdat\x18)\x1e3<\x8d\xe6\xe8J\xb3io\x11\xe9\x17\x00\xa7V\xca'
 
-# Global variables to store player score and money
-player_score = 0
+# Global variables
 player_money = 1000
+player_score = 0
+challenge_number = 1
+
+@app.before_request
+def initialize_game():
+    global player_money, player_score, challenge_number
+
+    if challenge_number == 1:  # Initialize if it's the start of the game
+        player_money = 1000
+        player_score = 0
+        challenge_number = 1
 
 @app.route('/')
 def start():
@@ -19,317 +29,284 @@ def instructions():
 def regions():
     return render_template('regions.html')
 
-@app.before_request
-def initialize_game():
-    if 'player_money' not in session:
-        session['player_money'] = 1000
-    if 'player_score' not in session:
-        session['player_score'] = 0
-    if 'challenge_number' not in session:
-        session['challenge_number'] = 1
-
 # Route for Region 1: Valley of Ventures
 @app.route('/region1', methods=['GET', 'POST'])
 def region1():
-    return render_template('region1.html', player_money=session['player_money'], player_score=session['player_score'])
+    return render_template('region1.html', player_money=player_money, player_score=player_score)
 
 # Challenge 1: Stock Opportunity (Region 1)
 @app.route('/region1/challenge1', methods=['GET', 'POST'])
 def region1_challenge1():
+    global player_money, player_score, challenge_number
+
     if request.method == 'POST':
         investment_choice = request.form['investment_choice']
+
         # Handle Challenge 1: Stock Opportunity
         if investment_choice == 'a':
-            session['player_money'] += 37.5  # 15% return on $250
-            session['player_score'] += 10  # Points for high-risk, high-return investment
+            player_money += 37.5  # 15% return on $250
+            player_score += 10  # Points for high-risk, high-return investment
         elif investment_choice == 'b':
-            session['player_money'] += 0  # No gain or loss on $500
-            session['player_score'] += 5  # Points for moderate risk, no return
+            player_money = 25  # No gain or loss on $500
+            player_score += 5  # Points for moderate risk, no return
         elif investment_choice == 'c':
-            session['player_money'] += 67.5  # 10% return on $150 (Tech) + 5% on $350 (Bonds)
-            session['player_score'] += 15  # Points for diversification (lower risk)
+            player_money += 67.5  # 10% return on $150 (Tech) + 5% on $350 (Bonds)
+            player_score += 15  # Points for diversification (lower risk)
 
         # Move to Challenge 2
-        session['challenge_number'] = 2
+        challenge_number = 2
         return redirect(url_for('region1_challenge2'))
 
-    return render_template('region1_challenge1.html', player_money=session['player_money'], player_score=session['player_score'])
+    return render_template('region1_challenge1.html', player_money=player_money, player_score=player_score)
+
 
 # Challenge 2: Gold vs. Real Estate (Region 1)
 @app.route('/region1/challenge2', methods=['GET', 'POST'])
 def region1_challenge2():
+    global player_money, player_score
+
     if request.method == 'POST':
         investment_choice = request.form['investment_choice']
+
         # Handle Challenge 2: Gold vs. Real Estate
         if investment_choice == 'a':
-            session['player_money'] += 40  # 8% return on $500 for gold
-            session['player_score'] += 10  # Points for short-term investment
+            player_money += 40  # 8% return on $500 for gold
+            player_score += 10  # Points for short-term investment
         elif investment_choice == 'b':
-            session['player_money'] += 75  # 15% return on $500 for real estate after 3 years
-            session['player_score'] += 20  # Points for long-term growth investment
+            player_money += 75  # 15% return on $500 for real estate after 3 years
+            player_score += 20  # Points for long-term growth investment
         elif investment_choice == 'c':
-            session['player_money'] += 57.5  # Gold +8% on $250, Real Estate +15% on $250
-            session['player_score'] += 15  # Points for balanced investment
+            player_money += 57.5  # Gold +8% on $250, Real Estate +15% on $250
+            player_score += 15  # Points for balanced investment
 
-        # Move to Region 2
-        return redirect(url_for('region2'))
+        # Move to Region 2 or another part of the game
+        return redirect(url_for('region2'))  # Placeholder for next region
 
-    return render_template('region1_challenge2.html', player_money=session['player_money'], player_score=session['player_score'])
+    return render_template('region1_challenge2.html', player_money=player_money, player_score=player_score)
 
 # Route for Region 2: Forest of Finance
 @app.route('/region2', methods=['GET', 'POST'])
 def region2():
-    return render_template('region2.html', player_money=session['player_money'], player_score=session['player_score'])
+    return render_template('region2.html', player_money=player_money, player_score=player_score)
 
 # Challenge 1: Emergency Expense (Region 2)
 @app.route('/region2/challenge1', methods=['GET', 'POST'])
 def region2_challenge1():
+    global player_money, player_score
+
     if request.method == 'POST':
         expense_choice = request.form['expense_choice']
         # Handle Challenge 1: Emergency Expense
         if expense_choice == 'a':
-            session['player_money'] -= 200  # Investment decreased temporarily
-            session['player_score'] += 10  # Points for tough decision to delay investment
+            player_money -= 200  # Investment decreased temporarily
+            player_score += 10  # Points for tough decision to delay investment
         elif expense_choice == 'b':
-            session['player_money'] -= 200  # Savings decreased
-            session['player_score'] += 15  # Points for using savings (avoiding debt)
+            player_money -= 200  # Savings decreased
+            player_score += 15  # Points for using savings (avoiding debt)
         elif expense_choice == 'c':
-            session['player_money'] -= 220  # Debt incurs 10% interest
-            session['player_score'] -= 5  # Points for borrowing and facing interest
+            player_money -= 220  # Debt incurs 10% interest
+            player_score -= 5  # Points for borrowing and facing interest
 
         # Move to Challenge 2
-        session['challenge_number'] = 2
+        challenge_number = 2
         return redirect(url_for('region2_challenge2'))
 
-    return render_template('region2_challenge1.html', player_money=session['player_money'], player_score=session['player_score'])
+    return render_template('region2_challenge1.html', player_money=player_money, player_score=player_score)
 
 # Challenge 2: Luxury Temptation (Region 2)
 @app.route('/region2/challenge2', methods=['GET', 'POST'])
 def region2_challenge2():
+    global player_money, player_score
+
     if request.method == 'POST':
         expense_choice = request.form['expense_choice']
         # Handle Challenge 2: Luxury Temptation
         if expense_choice == 'a':
-            session['player_money'] -= 200  # Immediate loss for luxury purchase
-            session['player_score'] -= 5  # Points for impulsive spending
+            player_money -= 200  # Immediate loss for luxury purchase
+            player_score -= 5  # Points for impulsive spending
         elif expense_choice == 'b':
-            session['player_money']  # No change in portfolio
-            session['player_score'] += 10  # Points for avoiding impulsive buying
+            player_money  # No change in portfolio
+            player_score += 10  # Points for avoiding impulsive buying
         elif expense_choice == 'c':
-            session['player_money'] += 220  # Gain from resale after 3 turns
-            session['player_score'] += 20  # Points for making a wise purchase
+            player_money += 220  # Gain from resale after 3 turns
+            player_score += 20  # Points for making a wise purchase
 
         # Move to Region 3
         return redirect(url_for('region3'))
 
-    return render_template('region2_challenge2.html', player_money=session['player_money'], player_score=session['player_score'])
+    return render_template('region2_challenge2.html', player_money=player_money, player_score=player_score)
 
 # Route for Region 3: Canyon of Compounders
 @app.route('/region3', methods=['GET', 'POST'])
 def region3():
-    return render_template('region3.html', player_money=session['player_money'], player_score=session['player_score'])
+    return render_template('region3.html', player_money=player_money, player_score=player_score)
 
 # Challenge 1: Reinvestment Decision (Region 3)
 @app.route('/region3/challenge1', methods=['GET', 'POST'])
 def region3_challenge1():
+    global player_money, player_score
+
     if request.method == 'POST':
         reinvest_choice = request.form['reinvest_choice']
         # Handle Challenge 1: Reinvestment Decision
         if reinvest_choice == 'a':
-            session['player_money'] -= 50  # Immediate consumption
-            session['player_score'] -= 5  # Points deducted for poor financial decision
+            player_money -= 50  # Immediate consumption
+            player_score -= 5  # Points deducted for poor financial decision
         elif reinvest_choice == 'b':
-            session['player_money'] += 10  # $60 growth - $50 initial
-            session['player_score'] += 20  # High points for wise reinvestment
+            player_money += 75  # $60 growth - $50 initial
+            player_score += 20  # High points for wise reinvestment
         elif reinvest_choice == 'c':
-            session['player_money'] += 1  # $51 growth - $50 initial
-            session['player_score'] += 10  # Moderate points for cautious saving
+            player_money += 50  # $51 growth - $50 initial
+            player_score += 10  # Moderate points for cautious saving
 
         # Move to Challenge 2
-        session['challenge_number'] = 2
+        challenge_number = 2
         return redirect(url_for('region3_challenge2'))
 
     return render_template(
         'region3_challenge1.html', 
-        player_money=session['player_money'], 
-        player_score=session['player_score']
+        player_money=player_money, 
+        player_score=player_score
     )
-
 
 # Challenge 2: Long-Term vs Short-Term Gains (Region 3)
 @app.route('/region3/challenge2', methods=['GET', 'POST'])
 def region3_challenge2():
+    global player_money, player_score
+
     if request.method == 'POST':
         gains_choice = request.form['gains_choice']
         # Handle Challenge 2: Long-Term vs Short-Term Gains
         if gains_choice == 'a':
-            session['player_money'] += 50  # Short-term gain
-            session['player_score'] += 5  # Fewer points for quick returns
+            player_money += 50  # Short-term gain
+            player_score += 5  # Fewer points for quick returns
         elif gains_choice == 'b':
-            session['player_money'] += 100  # Long-term gain
-            session['player_score'] += 20  # High points for patience and long-term thinking
+            player_money += 100  # Long-term gain
+            player_score += 20  # High points for patience and long-term thinking
         elif gains_choice == 'c':
-            session['player_money'] += 100  # Gain split: $50 immediate + $50 later
-            session['player_score'] += 10  # Moderate points for balanced choice
+            player_money += 80  # Gain split: $50 immediate + $50 later
+            player_score += 10  # Moderate points for balanced choice
 
         # Move to Region 4
         return redirect(url_for('region4')) # Replace with next region or summary endpoint
 
     return render_template(
         'region3_challenge2.html', 
-        player_money=session['player_money'], 
-        player_score=session['player_score']
+        player_money=player_money, 
+        player_score=player_score
     )
 
 # Route for Region 4: City of Cycles
 @app.route('/region4', methods=['GET', 'POST'])
 def region4():
-    return render_template('region4.html', player_money=session['player_money'], player_score=session['player_score'])
+    return render_template('region4.html', player_money=player_money, player_score=player_score)
 
 # Challenge 1: Market Timing (Region 4)
 @app.route('/region4/challenge1', methods=['GET', 'POST'])
 def region4_challenge1():
+    global player_money, player_score
+
     if request.method == 'POST':
         market_choice = request.form['market_choice']
         # Handle Challenge 1: Market Timing
         if market_choice == 'a':
-            session['player_money'] -= 450  # Loss due to short-term market volatility
-            session['player_score'] -= 10  # Negative points for risky behavior
+            player_money -= 450  # Loss due to short-term market volatility
+            player_score -= 10  # Negative points for risky behavior
         elif market_choice == 'b':
-            session['player_money']  # No immediate change, but missed opportunity
-            session['player_score'] -= 5  # Minor penalty for indecision
+            player_money  # No immediate change, but missed opportunity
+            player_score -= 5  # Minor penalty for indecision
         elif market_choice == 'c':
-            session['player_money'] -= 50  # Loss minimized through dollar-cost averaging
-            session['player_score'] += 15  # Positive points for risk management
-
-        # Move to Challenge 2
-        session['challenge_number'] = 2
-        return redirect(url_for('region4_challenge2'))
-
-    return render_template(
-        'region4_challenge1.html', 
-        player_money=session['player_money'], 
-        player_score=session['player_score']
-    )
-
-
-# Challenge 2: Recession Warning (Region 4)
-@app.route('/region4/challenge2', methods=['GET', 'POST'])
-def region4_challenge2():
-    if request.method == 'POST':
-        recession_choice = request.form['recession_choice']
-        # Handle Challenge 2: Recession Warning
-        if recession_choice == 'a':
-            session['player_money'] -= 30  # Limited loss due to safer assets
-            session['player_score'] += 15  # High points for prudent decision
-        elif recession_choice == 'b':
-            session['player_money'] -= 200  # Large loss from market exposure
-            session['player_score'] -= 10  # Negative points for inaction
-        elif recession_choice == 'c':
-            session['player_money']  # No loss, but opportunity cost
-            session['player_score'] += 5  # Moderate points for playing it safe
+            player_money += 650  # Large gain after market correction
+            player_score += 30  # Big points for understanding market cycles
 
         # Move to Region 5
-        session['challenge_number'] = None
-        return redirect(url_for('region5')) # Replace with next region or summary endpoint
-    
-    return render_template(
-        'region4_challenge2.html', 
-        player_money=session['player_money'], 
-        player_score=session['player_score']
-    )
+        return redirect(url_for('region5')) # Next region
 
+    return render_template('region4_challenge1.html', player_money=player_money, player_score=player_score)
+
+# Challenge 2: Retirement Planning (Region 4)
+@app.route('/region4/challenge2', methods=['GET', 'POST'])
+def region4_challenge2():
+    global player_money, player_score
+
+    if request.method == 'POST':
+        plan_choice = request.form['plan_choice']
+        # Handle Challenge 2: Retirement Planning
+        if plan_choice == 'a':
+            player_money += 200  # Money saved for retirement
+            player_score += 15  # Points for early retirement planning
+        elif plan_choice == 'b':
+            player_money += 150  # Small contributions over time
+            player_score += 10  # Points for consistent contributions
+        elif plan_choice == 'c':
+            player_money -= 90  # Immediate expense, missed retirement opportunity
+            player_score -= 5  # Points deducted for missing out on long-term planning
+
+        # End of game (or next phase)
+        return redirect(url_for('game_summary'))  # Replace with final summary endpoint
+
+    return render_template('region4_challenge2.html', player_money=player_money, player_score=player_score)
+
+# Route for Region 5: Summit of Savvy Investors
 @app.route('/region5', methods=['GET', 'POST'])
 def region5():
-    return render_template('region5.html', player_money=session['player_money'], player_score=session['player_score'])
+    return render_template('region5.html', player_money=player_money, player_score=player_score)
 
-# Challenge 1: Retirement Planning (Region 5)
+# Challenge 1: Investment in Bonds (Region 5)
 @app.route('/region5/challenge1', methods=['GET', 'POST'])
 def region5_challenge1():
+    global player_money, player_score
+
     if request.method == 'POST':
-        retirement_choice = request.form['retirement_choice']
-        # Handle Challenge 1: Retirement Planning
-        if retirement_choice == 'a':
-            session['player_money'] -= 50  # Contribute small amount now
-            session['player_score'] += 15  # Positive points for prudent planning
-            session['retirement_fund'] = session.get('retirement_fund', 0) + 52.5  # Gradual growth
-        elif retirement_choice == 'b':
-            session['player_money']  # No immediate impact
-            session['player_score'] -= 5  # Negative points for missed opportunity
-        elif retirement_choice == 'c':
-            session['player_money'] -= 500  # Large contribution impacts liquidity
-            session['player_score'] += 25  # High points for long-term commitment
-            session['retirement_fund'] = session.get('retirement_fund', 0) + 550  # Significant growth
+        bond_choice = request.form['bond_choice']
+        # Handle Challenge 1: Investment in Bonds
+        if bond_choice == 'a':
+            player_money += 300  # Bonds earn steady returns
+            player_score += 15  # Points for playing it safe
+        elif bond_choice == 'b':
+            player_money -= 100  # Market volatility affects bond price
+            player_score -= 5  # Points deducted for market risk
+        elif bond_choice == 'c':
+            player_money += 500  # Long-term bond investment pays off
+            player_score += 20  # Points for long-term strategy
 
         # Move to Challenge 2
-        session['challenge_number'] = 2
+        challenge_number = 2
         return redirect(url_for('region5_challenge2'))
 
-    return render_template(
-        'region5_challenge1.html', 
-        player_money=session['player_money'], 
-        player_score=session['player_score'], 
-        retirement_fund=session.get('retirement_fund', 0)
-    )
+    return render_template('region5_challenge1.html', player_money=player_money, player_score=player_score)
 
-
-# Challenge 2: Life Insurance (Region 5)
+# Challenge 2: Crypto vs. Traditional Investments (Region 5)
 @app.route('/region5/challenge2', methods=['GET', 'POST'])
 def region5_challenge2():
+    global player_money, player_score
+
     if request.method == 'POST':
-        insurance_choice = request.form['insurance_choice']
-        # Handle Challenge 2: Life Insurance
-        if insurance_choice == 'a':
-            session['player_money'] -= 100  # Cost of the premium
-            session['player_score'] += 20  # Positive points for risk management
-        elif insurance_choice == 'b':
-            session['player_money']  # No immediate impact
-            session['player_score'] -= 10  # Negative points for taking a risk
-        elif insurance_choice == 'c':
-            session['player_money'] -= 100  # Cost of the plan
-            session['player_score'] += 25  # High points for combining insurance with investment
-            session['player_money'] *= 1.05  # Portfolio grows by 5%
+        investment_choice = request.form['investment_choice']
+        # Handle Challenge 2: Crypto vs. Traditional Investments
+        if investment_choice == 'a':
+            player_money += 400  # Crypto boom rewards early investors
+            player_score += 25  # Points for risk-taking in high-growth assets
+        elif investment_choice == 'b':
+            player_money += 250  # Traditional investments grow steadily
+            player_score += 15  # Points for safe investments
+        elif investment_choice == 'c':
+            player_money += 350  # Balanced approach gains from both markets
+            player_score += 20  # Points for diversification
 
-        # End of Region 5 - Move to Final Stage or Summary
-        return redirect(url_for('golden_portfolio_test'))  # Replace with the next stage of the game
-
-    return render_template(
-        'region5_challenge2.html', 
-        player_money=session['player_money'], 
-        player_score=session['player_score']
-    )
-
-# Golden Portfolio Test (Final Question)
-@app.route('/golden_portfolio_test', methods=['GET', 'POST'])
-def golden_portfolio_test():
-    if request.method == 'POST':
-        final_answer = request.form['final_answer']
-        # Handle Final Question
-        if final_answer == 'b':
-            session['player_score'] += 20  # Bonus points for correct answer
-            message = "Correct! Compound interest helps your investments grow exponentially."
-        else:
-            session['player_score'] -= 10  # Penalty for incorrect answer
-            message = "Incorrect. The correct answer is (b): It allows your investment to grow exponentially."
-
-        # Redirect to summary page
-        session['final_message'] = message
+        # Move to final challenge or summary
         return redirect(url_for('game_summary'))
 
-    return render_template(
-        'golden_portfolio_test.html', 
-        player_money=session['player_money'], 
-        player_score=session['player_score']
-    )
+    return render_template('region5_challenge2.html', player_money=player_money, player_score=player_score)
 
 # Game Summary Page
 @app.route('/game_summary', methods=['GET'])
 def game_summary():
-    final_message = session.get('final_message', "Your journey is complete!")
+    final_message = "Your journey is complete!"  # Default final message
     return render_template(
         'game_summary.html', 
-        player_money=session['player_money'], 
-        player_score=session['player_score'], 
+        player_money=player_money,  # Use global variables for money
+        player_score=player_score,  # Use global variables for score
         final_message=final_message
     )
 
@@ -337,4 +314,3 @@ def game_summary():
 @app.route('/end_game', methods=['GET'])
 def end_game():
     return render_template('end_game.html')
-
