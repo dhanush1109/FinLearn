@@ -3,9 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Full-Screen Image with Next Button</title>
+    <title>Forest of Finance</title>
     <style>
-        /* Full reset and viewport control */
+        @keyframes leafFall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes buttonGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(34, 139, 34, 0.6); }
+            50% { box-shadow: 0 0 25px rgba(34, 139, 34, 0.8); }
+        }
+
+        @keyframes titleFade {
+            0% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -16,43 +31,83 @@
             height: 100%;
             width: 100%;
             overflow: hidden;
+            font-family: 'Arial', sans-serif;
         }
 
         .fullscreen-container {
             position: relative;
             width: 100%;
             height: 100%;
+            background: rgba(0, 0, 0, 0.3);
         }
 
         .fullscreen-image {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Ensures the image covers the entire screen without distortion */
+            object-fit: cover;
+            position: absolute;
+            z-index: -1;
         }
 
-        /* Style for the Next button */
+        .title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ffffff;
+            font-size: 4em;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            animation: titleFade 1.5s ease-out;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px 40px;
+            border-radius: 15px;
+            border: 2px solid #228B22;
+        }
+
         .next-button {
             position: absolute;
-            bottom: 30px; /* Position at the bottom of the screen */
+            bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
+            background-color: rgba(34, 139, 34, 0.8);
             color: white;
             font-size: 20px;
             padding: 15px 30px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            z-index: 10; /* Ensure it appears above the image */
-            transition: background-color 0.3s ease;
+            z-index: 10;
+            transition: all 0.3s ease;
+            animation: buttonGlow 2s infinite;
         }
 
         .next-button:hover {
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(34, 139, 34, 1);
+            transform: translateX(-50%) scale(1.05);
         }
 
-        /* Responsive adjustments for smaller screens */
+        .falling-leaf {
+            position: absolute;
+            font-size: 24px;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .floating-icon {
+            position: absolute;
+            font-size: 24px;
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0.8;
+        }
+
         @media screen and (max-width: 600px) {
+            .title {
+                font-size: 2.5em;
+                padding: 15px 30px;
+            }
+            
             .next-button {
                 padding: 12px 24px;
                 font-size: 16px;
@@ -61,18 +116,49 @@
     </style>
 </head>
 <body>
-    <!-- Full-Screen Image Container -->
     <div class="fullscreen-container">
-        <img src="static/FOF.jpg" alt="Full-Screen Image" class="fullscreen-image">
-        <!-- Next Button -->
-        <button class="next-button" onclick="nextImage()">Next</button>
+        <img src="/api/placeholder/1920/1080" alt="Forest Background" class="fullscreen-image">
+        <h1 class="title">Forest of Finance</h1>
+        <button class="next-button" onclick="nextPage()">Journey Deeper</button>
     </div>
 
     <script>
-        // Function to handle the "Next" button click
-        function nextImage() {
-            // Redirect to the next page
+        function createFallingLeaves() {
+            const leaves = ['🍃', '💰', '📈', '🌿'];
+            setInterval(() => {
+                const leaf = document.createElement('div');
+                leaf.className = 'falling-leaf';
+                leaf.innerHTML = leaves[Math.floor(Math.random() * leaves.length)];
+                leaf.style.left = Math.random() * 100 + 'vw';
+                leaf.style.animation = `leafFall ${5 + Math.random() * 5}s linear`;
+                document.body.appendChild(leaf);
+                
+                // Remove leaf after animation
+                setTimeout(() => {
+                    leaf.remove();
+                }, 10000);
+            }, 500);
+        }
+
+        function createFloatingIcons() {
+            const icons = ['💵', '📊', '💎', '🏦'];
+            icons.forEach((icon, index) => {
+                const floating = document.createElement('div');
+                floating.className = 'floating-icon';
+                floating.innerHTML = icon;
+                floating.style.left = (20 + index * 20) + 'vw';
+                floating.style.top = '20vh';
+                document.body.appendChild(floating);
+            });
+        }
+
+        function nextPage() {
             window.location.href = '/region2/challenge1';
+        }
+
+        window.onload = function() {
+            createFallingLeaves();
+            createFloatingIcons();
         }
     </script>
 </body>
