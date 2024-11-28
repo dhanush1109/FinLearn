@@ -9,7 +9,7 @@ player_money = 1000
 
 @app.route('/')
 def start():
-    return render_template('Templates/start.html')
+    return render_template('templates/start.html')
 
 @app.route('/instructions')
 def instructions():
