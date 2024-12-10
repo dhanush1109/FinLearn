@@ -96,19 +96,19 @@
         </header>
 
         <section>
-            <h2>Your current portfolio: ${{ player_money }} | Score: {{ player_score }}</h2>
-            <p>You are faced with a decision: reinvest your $50 or spend it?</p>
+            <h2>Your current portfolio: ₹{{ player_money }} | Score: {{ player_score }}</h2>
+            <p>You are faced with a decision: reinvest your ₹50 or spend it?</p>
             
             <form action="{{ url_for('region3_challenge1') }}" method="POST">
                 <div class="reinvest-options">
                     <label for="a">
                         <input type="radio" id="a" name="reinvest_choice" value="a" required> 
-                        (a) Spend the $50 immediately.
+                        (a) Spend the ₹50 immediately.
                     </label><br>
                     
                     <label for="b">
                         <input type="radio" id="b" name="reinvest_choice" value="b" required> 
-                        (b) Reinvest the $50.
+                        (b) Reinvest the ₹50.
                     </label><br>
                     
                     <label for="c">
