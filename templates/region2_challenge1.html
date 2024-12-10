@@ -96,24 +96,24 @@
         </header>
 
         <section>
-            <h2>Your current portfolio: ${{ player_money }} | Score: {{ player_score }}</h2>
-            <p>You are faced with an unexpected emergency expense of $200. You need to make a decision on how to handle it.</p>
+            <h2>Your current portfolio: ₹{{ player_money }} | Score: {{ player_score }}</h2>
+            <p>You are faced with an unexpected emergency expense of ₹200. You need to make a decision on how to handle it.</p>
             
             <form method="POST">
                 <div class="expense-options">
                     <label for="a">
                         <input type="radio" id="a" name="expense_choice" value="a" required> 
-                        Delay your investment and use $200 from your portfolio.
+                        Delay your investment and use ₹200 from your portfolio.
                     </label><br>
                     
                     <label for="b">
                         <input type="radio" id="b" name="expense_choice" value="b" required> 
-                        Use your savings of $200.
+                        Use your savings of ₹200.
                     </label><br>
                     
                     <label for="c">
                         <input type="radio" id="c" name="expense_choice" value="c" required> 
-                        Borrow the $200 and pay it back with interest.
+                        Borrow the ₹200 and pay it back with interest.
                     </label><br><br>
                 </div>
 
