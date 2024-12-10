@@ -86,7 +86,7 @@
     <div class="challenge-container">
         <h1>Challenge 2: Gold vs. Real Estate</h1>
         <div class="player-info">
-            <p>Your current money: ${{ player_money }}</p>
+            <p>Your current money: ₹{{ player_money }}</p>
             <p>Your current score: {{ player_score }} points</p>
         </div>
         <form method="post">
@@ -94,15 +94,15 @@
             <div class="investment-options">
                 <label>
                     <input type="radio" name="investment_choice" value="a" required> 
-                    Buy gold ($500) with an 8% return 
+                    Buy gold (₹500) with an 8% return 
                 </label>
                 <label>
                     <input type="radio" name="investment_choice" value="b" required> 
-                    Invest in real estate ($500) with a 15% return after 3 years 
+                    Invest in real estate (₹500) with a 15% return after 3 years 
                 </label>
                 <label>
                     <input type="radio" name="investment_choice" value="c" required> 
-                    Split between gold ($250) and real estate ($250), gold returns 8% and real estate 15% 
+                    Split between gold (₹250) and real estate (₹250), gold returns 8% and real estate 15% 
                 </label>
             </div>
             <button type="submit" class="next-button">
