@@ -96,15 +96,15 @@
         </header>
 
         <section>
-            <h2>Your current portfolio: ${{ player_money }} | Score: {{ player_score }}</h2>
-            <p>Retirement Fund: ${{ retirement_fund }}</p>
+            <h2>Your current portfolio: ₹{{ player_money }} | Score: {{ player_score }}</h2>
+            <p>Retirement Fund: ₹{{ retirement_fund }}</p>
             <p>How will you plan for your retirement?</p>
             
             <form method="POST">
                 <div class="retirement-options">
                     <label for="a">
                         <input type="radio" id="a" name="retirement_choice" value="a" required> 
-                        (a) Contribute 5% ($50) now and increase over time.
+                        (a) Contribute 5% (₹50) now and increase over time.
                     </label><br>
                     
                     <label for="b">
@@ -114,7 +114,7 @@
                     
                     <label for="c">
                         <input type="radio" id="c" name="retirement_choice" value="c" required> 
-                        (c) Put a large amount ($500) now for compounding benefits.
+                        (c) Put a large amount (₹500) now for compounding benefits.
                     </label><br><br>
                 </div>
 
