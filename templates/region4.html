@@ -125,14 +125,21 @@
 
     <script>
         function createFloatingElements() {
-            const elements = ['🚲', '♻️', '🌱', '🌍'];
+            const elements = [
+                '🚲', '♻️', '🌱', '🌍', 
+                '🚉', '🍃', '🌿', '🏭', 
+                '⚡', '🌞', '🍀', '🌊', 
+                '🚊', '🌈', '🔋', '🌳',
+                '🌷', '✨', '🌸', '🍃'
+            ];
             elements.forEach((element, index) => {
                 const floating = document.createElement('div');
                 floating.className = 'floating-element';
                 floating.innerHTML = element;
-                floating.style.left = (20 + index * 20) + 'vw';
-                floating.style.top = (30 + index * 10) + 'vh';
-                floating.style.animationDelay = (index * 0.5) + 's';
+                floating.style.left = (Math.random() * 90) + 'vw';
+                floating.style.top = (Math.random() * 80) + 'vh';
+                floating.style.animationDelay = (Math.random() * 2) + 's';
+                floating.style.fontSize = (20 + Math.random() * 10) + 'px';
                 document.body.appendChild(floating);
             });
         }
